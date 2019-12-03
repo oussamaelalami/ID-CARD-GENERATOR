@@ -1,0 +1,163 @@
+for i in range(1,202):
+    #import info from excel file
+    import xlrd
+    workbook = xlrd.open_workbook("C:/Users/oussa/Desktop/ESI/exo_dataset_P001prep.xlsx")
+    worksheet = workbook.sheet_by_name('Sheet1')
+    num_rows = worksheet.nrows - 1
+    curr_row = i
+    row = worksheet.row(curr_row)
+    #barcode
+    import code128
+    brc_name=str(row[0].value)+".png"
+    code128.image(str(row[0].value)).save(brc_name)
+    #barcode background
+    from PIL import Image
+    imagePath = "C:/Users/oussa/Desktop/porjet/code/"+brc_name
+    newImagePath = "C:/Users/oussa/Desktop/porjet/code/"+brc_name
+    image = Image.open(imagePath)
+    image = image.convert('RGB')
+    pixels = image.load()
+    for x in range(image.size[0]) :
+        for y in range(image.size[1]):
+            if pixels[x, y] == (255,255,255):
+                pixels[x, y]=(11, 25, 62)
+    image.save(newImagePath)        
+    #download image
+    import requests
+    url =str(row[6].value)
+    url = url.split('?')[0]
+    filename = url.split('/')[-1]
+    r = requests.get(url, allow_redirects=True)
+    open(filename, 'wb').write(r.content)
+    #resize image
+    import PIL
+    from PIL import Image
+    basewidth = 219
+    img = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    wpercent = (basewidth / float(img.size[0]))
+    hsize = int((float(img.size[1]) * float(wpercent)))
+    img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+    img.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    baseheight = 212
+    img = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    hpercent = (baseheight / float(img.size[1]))
+    wsize = int((float(img.size[0]) * float(hpercent)))
+    img = img.resize((wsize, baseheight), PIL.Image.ANTIALIAS)
+    img.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    #put image on id card
+    from PIL import Image
+    def main(): 
+        try:  
+            img = Image.open("C:/Users/oussa/Desktop/ESI/front.png")  
+            img2 = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)  
+            img.paste(img2, (57, 44)) 
+            img.save("C:/Users/oussa/Desktop/porjet/code/"+filename)  
+        except IOError: 
+            pass
+    if __name__ == "__main__":
+        main()
+    #resize barcode
+    import PIL
+    from PIL import Image
+    basewidth = 200
+    img = Image.open("C:/Users/oussa/Desktop/porjet/code/"+brc_name)
+    wpercent = (basewidth / float(img.size[0]))
+    hsize = int((float(img.size[1]) * float(wpercent)))
+    img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+    img.save("C:/Users/oussa/Desktop/porjet/code/"+brc_name)
+    baseheight = 60
+    img = Image.open("C:/Users/oussa/Desktop/porjet/code/"+brc_name)
+    hpercent = (baseheight / float(img.size[1]))
+    wsize = int((float(img.size[0]) * float(hpercent)))
+    img = img.resize((wsize, baseheight), PIL.Image.ANTIALIAS)
+    img.save("C:/Users/oussa/Desktop/porjet/code/"+brc_name)
+    #put barcode on id card
+    from PIL import Image
+    def main(): 
+        try:  
+            img = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)  
+            img2 = Image.open("C:/Users/oussa/Desktop/porjet/code/"+brc_name)  
+            img.paste(img2, (40,350)) 
+            img.save("C:/Users/oussa/Desktop/porjet/code/"+filename)  
+        except IOError: 
+            pass
+    if __name__ == "__main__":
+        main()
+    #put text on the id card
+    from PIL import Image, ImageDraw, ImageFont
+    image = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Users/oussa/Downloads/roboto/Roboto-Black.ttf', size=15)
+    (x, y) = (500,157)
+    message = str(row[0].value)
+    color = 'rgb(0, 0, 0)' 
+    draw.text((x, y), message, fill=color, font=font)
+    image.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    #
+    image = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Users/oussa/Downloads/roboto/Roboto-Black.ttf', size=15)
+    (x, y) = (480,224)
+    message = str(row[4].value)
+    color = 'rgb(0, 0, 0)' 
+    draw.text((x, y), message, fill=color, font=font)
+    image.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    #
+    image = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Users/oussa/Downloads/roboto/Roboto-Black.ttf', size=15)
+    (x, y) = (500,300)
+    message = row[5].value
+    color = 'rgb(0, 0, 0)' 
+    draw.text((x, y), message, fill=color, font=font)
+    image.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    #
+    image = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Users/oussa/Downloads/roboto/Roboto-Black.ttf', size=25)
+    (x, y) = (60,280)
+    message = str(row[1].value)+" "+str(row[2].value)
+    color = 'rgb(255, 255, 255)' 
+    draw.text((x, y), message, fill=color, font=font)
+    image.save("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    #
+    image = Image.open("C:/Users/oussa/Desktop/porjet/code/"+filename)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype('C:/Users/oussa/Downloads/roboto/Roboto-Black.ttf', size=15)
+    (x, y) = (60,320)
+    message = str(row[3].value)
+    color = 'rgb(255, 255, 255)' 
+    draw.text((x, y), message, fill=color, font=font)
+    image.save("C:/Users/oussa/Desktop/porjet/ID_CARDS/"+str(i)+".png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
